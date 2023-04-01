@@ -1,2 +1,2 @@
 # EditorTools
-Unity editor helper Tools
+Unity editor helper tools
