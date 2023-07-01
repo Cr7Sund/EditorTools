@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40fae17f544329c4badc9d2024427ffa, type: 3}
+  m_Name: VirtualRootItem
+  m_EditorClassIdentifier: 
+  menuName: 
+  description: 
+  uxmlFile: {fileID: 0}
+  category: 0
+  stackable: 0
+  buyprice: 0
+  sellpercentage: 0
+  icon: {fileID: 0}
+  childMenuItems:
+  - {fileID: 11400000, guid: 2215bea28020d0a4ebd5e777fa334f7f, type: 2}

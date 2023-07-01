@@ -1,0 +1,22 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements"
+    editor-extension-mode="True">
+    <Style src="../Styles/EditorMenuWindow.uss" />
+    <ui:VisualElement name="Container"
+        style="flex-grow: 1; flex-direction: row; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px;">
+        <ui:VisualElement name="ItemsTab" style="width: 25%;">
+            <ui:VisualElement name="Header"
+                style="flex-direction: row; border-bottom-color: rgb(0, 0, 0); margin-bottom: 5px; min-width: auto; max-width: none; max-height: 30px; min-height: 30px;">
+                <ui:Label text="Items" display-tooltip-when-elided="true"
+                    style="flex-grow: 1; -unity-font-style: bold; font-size: 24px; -unity-text-align: middle-left;" />
+                <ui:Button text="+" display-tooltip-when-elided="true" name="Btn_AddItem" />
+            </ui:VisualElement>
+
+            <ui:TreeView name="ItemTreView" fixed-item-height="16" />
+        </ui:VisualElement>
+        <ui:VisualElement
+            style="width: 1px; color: rgb(14, 14, 14); background-color: rgb(202, 202, 202); margin-left: 2px; margin-right: 2px;" />
+        <ui:ScrollView name="ScrollView_Details"
+            style="width: 75%; color: rgb(253, 253, 253); background-color: rgba(106, 106, 106, 0);">
+        </ui:ScrollView>
+    </ui:VisualElement>
+</ui:UXML>
