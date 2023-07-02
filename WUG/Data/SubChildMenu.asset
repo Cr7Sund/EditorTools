@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 40fae17f544329c4badc9d2024427ffa, type: 3}
-  m_Name: ChildMenu
+  m_Name: SubChildMenu
   m_EditorClassIdentifier: 
-  menuName: ChildMenu
+  menuName: SubChildMenu
   description: 
   uxmlFile: {fileID: 9197481963319205126, guid: 3a21687920bb8354ea42a3326a000e56,
     type: 3}
@@ -20,6 +20,5 @@ MonoBehaviour:
   stackable: 0
   buyprice: 0
   sellpercentage: 0
-  icon: {fileID: 21300000, guid: 13a60750ae5bc49489d223fa150036f0, type: 3}
-  childMenuItems:
-  - {fileID: 11400000, guid: f6057a0737dff294a95eb6ef37ca7a6b, type: 2}
+  icon: {fileID: 21300000, guid: 03f45042bc495ff49bb1d6ae5b4cd794, type: 3}
+  childMenuItems: []

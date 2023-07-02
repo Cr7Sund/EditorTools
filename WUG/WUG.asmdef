@@ -1,0 +1,19 @@
+{
+    "name": "WUG",
+    "rootNamespace": "",
+    "references": [
+        "GUID:450c5dc82a5875448affb4f27793346a",
+        "GUID:ee25bd4c5770f7147b2e7abfba78d26e"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
