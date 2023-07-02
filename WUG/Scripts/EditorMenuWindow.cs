@@ -2,6 +2,7 @@ namespace Cr7Sund
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Reflection;
     using UnityEditor;
@@ -36,9 +37,11 @@ namespace Cr7Sund
         // The default rotate and scale values for the new Label.
         Rotate defaultRotate;
         Scale defaultScale;
+
         #endregion
 
         #region Define
+
         private const int ITEMHEIGHT = 16;
 
         private const string ROOTVIRTUALITEM = "VirtualRootItem";
@@ -53,9 +56,9 @@ namespace Cr7Sund
         public static void Init()
         {
             EditorMenuWindow wnd = GetWindow<EditorMenuWindow>();
-            wnd.titleContent = new GUIContent("Cr7Sund");
+            wnd.titleContent = new GUIContent("MenuWindow");
 
-            Vector2 size = new Vector2(1000, 475);
+            Vector2 size = new(1000, 475);
             wnd.minSize = size;
             wnd.maxSize = size;
         }
@@ -130,8 +133,7 @@ namespace Cr7Sund
                 int itemIndex = id++;
                 var viewDataList = PreorderTreeViewDataRecursive(childMenuItem, ref id);
 
-                TreeViewItemData<BaseMenuItem>
-                       treeViewItemData = new TreeViewItemData<BaseMenuItem>(itemIndex, childMenuItem, viewDataList);
+               var treeViewItemData = new TreeViewItemData<BaseMenuItem>(itemIndex, childMenuItem, viewDataList);
 
                 treeViewSubItemsData.Add(treeViewItemData);
             }
@@ -191,20 +193,22 @@ namespace Cr7Sund
         private void GenerateTreeView()
         {
             //Defining what each item will visually look like. In this case, the makeItem function is creating a clone of the ItemRowTemplate.
-            Func<VisualElement> makeItem = () => m_ItemRowTemplate.CloneTree();
-            // Func<VisualElement> makeItem = () => new Label("west");
+            VisualElement makeItem() => m_ItemRowTemplate.CloneTree();
 
             //Define the binding of each individual BaseMenuItem that is created. Specifically, 
             //it binds the Icon visual element to the scriptable object�s Icon property and the 
             //Name label to the FriendlyName property.
-            Action<VisualElement, int> bindItem = (e, i) =>
+
+            // Why we should use local function instead of lambda
+            // 1. local function will be called 
+            void bindItem(VisualElement e, int i)
             {
                 VisualElement iconElement = e.Q<VisualElement>("Icon");
 
                 var baseMenuItem = m_ItemTreeView.GetItemDataForIndex<BaseMenuItem>(i);
                 iconElement.style.backgroundImage = (baseMenuItem == null || baseMenuItem.icon == null) ? m_DefaultItemIcon.texture : baseMenuItem.icon.texture;
                 e.Q<Label>("Name").text = baseMenuItem.menuName;
-            };
+            }
 
             //Create the listview and set various properties
             m_ItemTreeView = rootVisualElement.Q<TreeView>("ItemTreView");
@@ -239,21 +243,39 @@ namespace Cr7Sund
             m_LargeDisplayIcon = m_DetailSection.Q<VisualElement>("Icon");
 
             //Register Value Changed Callbacks for new items added to the ListView
-            m_DetailSection.Q<TextField>("MenuName").RegisterValueChangedCallback(evt =>
+            var textField = m_DetailSection.Q<TextField>("MenuName");
+            textField.RegisterCallback<InputEvent>(evt =>
             {
-                m_activeItem.menuName = evt.newValue;
-                m_ItemTreeView.Rebuild();
+                string assetFilePath = AssetDatabase.GetAssetPath(m_activeItem);
+                assetFilePath = assetFilePath.Replace(Path.GetFileName(assetFilePath), $"{evt.newData}{Path.GetExtension(assetFilePath)}");
+
+                if (!string.IsNullOrEmpty(AssetDatabase.AssetPathToGUID(assetFilePath)))
+                {
+                    Log.Error($"Rename menu failed: already exists: {assetFilePath}");
+                    textField.value = evt.previousData;
+                }
+                else
+                {
+                    m_activeItem.menuName = evt.newData;
+                    m_ItemTreeView.Rebuild();
+                }
             });
-            m_DetailSection.Q<TextField>("MenuName").RegisterCallback<PointerLeaveEvent>(evt =>
+
+            textField.RegisterCallback<PointerLeaveEvent>(evt =>
             {
-                AssetDatabase.RenameAsset(AssetDatabase.GetAssetPath(m_activeItem), m_activeItem.menuName);
+                string assetFilePath = AssetDatabase.GetAssetPath(m_activeItem);
+                string renameErrorInfo = AssetDatabase.RenameAsset(assetFilePath, m_activeItem.menuName);
+                if (!string.IsNullOrEmpty(renameErrorInfo))
+                {
+                    Log.Error(renameErrorInfo);
+                }
             });
 
 
             m_DetailSection.Q<ObjectField>("IconPicker").RegisterValueChangedCallback(evt =>
             {
                 Sprite newSprite = evt.newValue as Sprite;
-                m_activeItem.icon = newSprite == null ? m_DefaultItemIcon : newSprite;
+                m_activeItem.icon = newSprite ?? m_DefaultItemIcon;
                 m_LargeDisplayIcon.style.backgroundImage = newSprite == null ? m_DefaultItemIcon.texture : newSprite.texture;
 
                 m_ItemTreeView.Rebuild();
@@ -321,9 +343,11 @@ namespace Cr7Sund
                         btnName = methodInfo.Name;
                     }
 
-                    var btnElement = new Button(() => { methodInfo.Invoke(baseMenuItem, null); });
-                    btnElement.name = btnName;
-                    btnElement.text = btnName;
+                    var btnElement = new Button(() => { methodInfo.Invoke(baseMenuItem, null); })
+                    {
+                        name = btnName,
+                        text = btnName
+                    };
 
                     btnContainer.Add(btnElement);
                 }
@@ -407,7 +431,7 @@ namespace Cr7Sund
             m_activeItem = (BaseMenuItem)selectedItems.First();
 
             string typeName = m_activeItem.GetType().ToString();
-            typeName = typeName.Substring(typeName.LastIndexOf('.') + 1);
+            typeName = typeName[(typeName.LastIndexOf('.') + 1)..];
             if (m_activeItem.uxmlFile == null)
             {
                 string assetPath = $"{EditorPath.UXMLPATH}{typeName}.uxml";
